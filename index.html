@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GameVault — Browser Arcade</title>
+<meta name="description" content="A curated arcade of browser games, loaded straight from the repository.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0b10; --fg:#f6f3ec; --card:#121218; --border:#26262f; --muted:#9a9aa8;
+    --primary:#22d3a6; --primary-ink:#06130f; --accent:#fbbf24; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--fg); -webkit-font-smoothing:antialiased;
+    font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+  }
+  h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;margin:0;letter-spacing:-.02em}
+  a{color:inherit}
+  .mono{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  /* top bar */
+  .top{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--border);background:rgba(11,11,16,.86);backdrop-filter:blur(12px)}
+  .top-inner{display:flex;align-items:center;gap:14px;height:64px}
+  .brand{display:flex;align-items:center;gap:9px;font-family:"Space Grotesk";font-weight:700;font-size:17px;text-decoration:none}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 12px var(--primary)}
+  .search{margin-left:auto;position:relative;flex:0 1 260px}
+  .search input{width:100%;height:36px;border-radius:999px;border:1px solid var(--border);background:#14141b;color:var(--fg);padding:0 14px 0 34px;font:inherit;font-size:13px;outline:none}
+  .search input:focus{border-color:rgba(34,211,166,.55)}
+  .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.5}
+
+  /* library */
+  .hero{padding:52px 0 0}
+  .hero h1{font-size:clamp(30px,5vw,46px);line-height:1.05;font-weight:700}
+  .hero h1 span{color:var(--primary)}
+  .hero p{max-width:52ch;margin:14px 0 0;color:var(--muted);font-size:15px;line-height:1.6}
+
+  .continue{padding:34px 0 0}
+  .rail{display:flex;gap:12px;overflow-x:auto;padding:10px 0 4px}
+  .rail a{display:flex;align-items:center;gap:10px;min-width:13rem;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--card);text-decoration:none;transition:border-color .2s}
+  .rail a:hover{border-color:rgba(34,211,166,.45)}
+  .rail .mini{width:42px;height:42px;border-radius:9px;flex:0 0 auto}
+  .rail b{display:block;font-family:"Space Grotesk";font-size:14px;font-weight:600}
+  .rail small{color:var(--muted);font-size:12px}
+
+  .filters{display:flex;flex-wrap:wrap;gap:8px;padding:32px 0 18px}
+  .pill{border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:999px;padding:7px 14px;cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;transition:.2s}
+  .pill:hover{color:var(--fg);border-color:#3a3a46}
+  .pill.on{background:rgba(34,211,166,.14);border-color:rgba(34,211,166,.6);color:var(--primary)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+  .card{position:relative;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);overflow:hidden;transition:border-color .25s,transform .25s}
+  .card:hover{border-color:rgba(34,211,166,.45);transform:translateY(-2px)}
+  .thumb{position:relative;aspect-ratio:16/10;overflow:hidden}
+  .thumb .scan{position:absolute;inset:0;opacity:.18;background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.7) 0 1px,transparent 1px 4px)}
+  .thumb .glyph{position:absolute;right:-6px;bottom:-26px;font-family:"Space Grotesk";font-weight:700;font-size:108px;line-height:1;color:rgba(0,0,0,.22);user-select:none}
+  .thumb .edge{position:absolute;inset:0 0 auto;height:1px;background:rgba(255,255,255,.25)}
+  .card-play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.45);opacity:0;transition:opacity .25s}
+  .card:hover .card-play{opacity:1}
+  .card-play span{display:inline-flex;align-items:center;gap:7px;background:var(--primary);color:var(--primary-ink);border-radius:999px;padding:8px 16px;font-family:"Space Grotesk";font-weight:600;font-size:13px}
+  .card-body{padding:15px}
+  .card-body h3{font-size:16px;font-weight:600}
+  .card-body p{margin:5px 0 0;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .tags span{border:1px solid var(--border);border-radius:999px;padding:3px 8px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .card-link{position:absolute;inset:0;z-index:2}
+  .fav{position:absolute;right:11px;top:11px;z-index:3;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.42);color:#fff;cursor:pointer;backdrop-filter:blur(4px)}
+  .fav:hover{background:rgba(0,0,0,.66)}
+  .fav.on{border-color:rgba(251,191,36,.55);color:var(--accent)}
+
+  .empty{padding:48px 0;text-align:center;color:var(--muted);font-size:14px}
+  .note{padding:44px 0 60px;color:var(--muted);font-size:12px;line-height:1.7}
+
+  /* play view */
+  .playbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 0 14px}
+  .playbar h1{font-size:22px;font-weight:600}
+  .playbar-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--border);background:#16161d;color:var(--fg);font:inherit;font-size:13px;cursor:pointer;text-decoration:none}
+  .btn:hover{border-color:#3a3a46}
+  .btn-primary{background:var(--primary);border-color:var(--primary);color:var(--primary-ink);font-weight:600}
+  .btn-primary:hover{filter:brightness(1.05)}
+
+  .stage{position:relative;height:calc(100vh - 214px);min-height:420px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#07070b}
+  .stage:fullscreen{height:100vh;border-radius:0;border:0}
+  .frame{display:block;width:100%;height:100%;border:0;background:#000}
+  .stage-msg{position:absolute;inset:0;display:grid;place-items:center;padding:28px;text-align:center;color:var(--muted);font-size:14px}
+  .err h2{font-size:20px;color:var(--fg);margin-bottom:10px}
+  .err p{margin:0 0 8px;font-size:13px;line-height:1.6}
+  .err .path{font-family:"JetBrains Mono",monospace;font-size:11px;word-break:break-all;color:#6f6f80}
+  .err .actions{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+  @media (max-width:640px){
+    .search{flex:1 1 auto}
+    .top-inner{height:auto;padding:12px 0;flex-wrap:wrap}
+    .stage{height:72vh}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   CONFIG — point at the repo that holds your game files.
+   Add a game by adding one object to GAMES: path is its location
+   in the repo, e.g. "games/snake.html".
+   ───────────────────────────────────────────────────────────── */
+const REPO = { owner: "googleOfficialDot", repo: "Google", branch: "main" };
+
+const GAMES = [
+  { id: "2048",        title: "2048",        tagline: "Slide, merge, chase the tile.",        path: "games/2048.html",        tags: ["Puzzle"],  colors: ["#f7b955", "#e2612f"], glyph: "2" },
+  { id: "snake",       title: "Snake",       tagline: "Eat, grow, don't bite yourself.",      path: "games/snake.html",       tags: ["Arcade"],  colors: ["#5ee08a", "#0f8a5f"], glyph: "S" },
+  { id: "breakout",    title: "Breakout",    tagline: "One paddle against a wall of bricks.", path: "games/breakout.html",    tags: ["Arcade"],  colors: ["#6aa8ff", "#3b3fb8"], glyph: "B" },
+  { id: "tetris",      title: "Tetris",      tagline: "Stack the falling blocks clean.",      path: "games/tetris.html",      tags: ["Puzzle"],  colors: ["#c084fc", "#6d28d9"], glyph: "T" },
+  { id: "flappy",      title: "Flappy",      tagline: "Tap, flap, survive the pipes.",        path: "games/flappy.html",      tags: ["Reflex"],  colors: ["#7dd3fc", "#0e7490"], glyph: "F" },
+  { id: "minesweeper", title: "Minesweeper", tagline: "Deduce the field, flag the mines.",    path: "games/minesweeper.html", tags: ["Logic"],   colors: ["#cbd5e1", "#475569"], glyph: "M" }
+];
+
+/* ── repo helpers ─────────────────────────────────────────── */
+const RAW_BASE = "https://raw.githubusercontent.com/" + REPO.owner + "/" + REPO.repo + "/" + REPO.branch + "/";
+const rawUrl = (path) => RAW_BASE + String(path).replace(/^\/+/, "");
+function rawDir(path) {
+  const clean = String(path).replace(/^\/+/, "");
+  const cut = clean.lastIndexOf("/");
+  return cut === -1 ? RAW_BASE : RAW_BASE + clean.slice(0, cut + 1);
+}
+
+/* ── browser storage ──────────────────────────────────────── */
+const STORE_KEY = "gamevault.library.v1";
+
+function loadLibrary() {
+  const blank = { favorites: [], recent: [], plays: {} };
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    if (!saved || typeof saved !== "object") return blank;
+    return {
+      favorites: Array.isArray(saved.favorites) ? saved.favorites : [],
+      recent: Array.isArray(saved.recent) ? saved.recent : [],
+      plays: saved.plays && typeof saved.plays === "object" ? saved.plays : {}
+    };
+  } catch (e) {
+    return blank;
+  }
+}
+function saveLibrary() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(library)); } catch (e) { /* storage blocked */ }
+}
+
+let library = loadLibrary();
+let filter = "all";
+let query = "";
+
+/* ── helpers ──────────────────────────────────────────────── */
+const esc = (s) => String(s == null ? "" : s)
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+const findGame = (id) => GAMES.find((g) => g.id === id) || null;
+const playId = () => {
+  const m = location.hash.match(/^#\/play\/(.+)$/);
+  return m ? decodeURIComponent(m[1]) : null;
+};
+const isFavorite = (id) => library.favorites.includes(id);
+
+function matches(game) {
+  if (filter === "favorites" && !isFavorite(game.id)) return false;
+  if (filter !== "all" && filter !== "favorites" && !(game.tags || []).includes(filter)) return false;
+  if (!query) return true;
+  const hay = (game.title + " " + game.tagline + " " + (game.tags || []).join(" ")).toLowerCase();
+  return hay.includes(query.toLowerCase());
+}
+
+function thumbStyle(game) {
+  const c = game.colors || ["#22d3a6", "#0ea5e9"];
+  return "background-image:radial-gradient(130% 130% at 12% 0%," + c[0] + " 0%," + c[1] + " 100%)";
+}
+
+/* ── rendering: library ───────────────────────────────────── */
+function cardHTML(game) {
+  const fav = isFavorite(game.id);
+  return '' +
+    '<article class="card">' +
+      '<div class="thumb" style="' + thumbStyle(game) + '">' +
+        '<div class="scan"></div><div class="edge"></div>' +
+        '<span class="glyph">' + esc(game.glyph || game.title.charAt(0)) + '</span>' +
+        '<div class="card-play"><span>' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play' +
+        '</span></div>' +
+      '</div>' +
+      '<div class="card-body">' +
+        '<h3>' + esc(game.title) + '</h3>' +
+        '<p>' + esc(game.tagline) + '</p>' +
+        '<div class="tags">' + (game.tags || []).map((t) => '<span>' + esc(t) + '</span>').join("") + '</div>' +
+      '</div>' +
+      '<a class="card-link" href="#/play/' + encodeURIComponent(game.id) + '" aria-label="Play ' + esc(game.title) + '"></a>' +
+      '<button class="fav' + (fav ? " on" : "") + '" data-fav="' + esc(game.id) + '" aria-label="' +
+        (fav ? "Remove from favorites" : "Add to favorites") + '">' +
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="' + (fav ? "currentColor" : "none") +
+        '" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.9l1.1-6.5L2.6 9.8l6.5-.9z"/></svg>' +
+      '</button>' +
+    '</article>';
+}
+
+function gridHTML() {
+  const list = GAMES.filter(matches);
+  if (!list.length) {
+    return '<div class="empty">No games match that yet.' +
+      (filter === "favorites" ? ' Tap the star on a game to save it here.' : '') + '</div>';
+  }
+  return list.map(cardHTML).join("");
+}
+
+function filtersHTML() {
+  const tags = Array.from(new Set(GAMES.flatMap((g) => g.tags || [])));
+  const items = [{ id: "all", label: "All games" }];
+  items.push({ id: "favorites", label: "Favorites" + (library.favorites.length ? " · " + library.favorites.length : "") });
+  tags.forEach((t) => items.push({ id: t, label: t }));
+  return items.map((it) =>
+    '<button class="pill' + (filter === it.id ? " on" : "") + '" data-filter="' + esc(it.id) + '">' + esc(it.label) + '</button>'
+  ).join("");
+}
+
+function continueHTML() {
+  const games = library.recent.map(findGame).filter(Boolean).slice(0, 6);
+  if (!games.length) return "";
+  return '<section class="continue"><p class="mono">Continue playing</p><div class="rail">' +
+    games.map((g) =>
+      '<a href="#/play/' + encodeURIComponent(g.id) + '">' +
+        '<span class="mini" style="' + thumbStyle(g) + '"></span>' +
+        '<span><b>' + esc(g.title) + '</b><small>Jump back in</small></span>' +
+      '</a>'
+    ).join("") + '</div></section>';
+}
+
+function renderLibrary() {
+  document.getElementById("view").innerHTML =
+    '<section class="hero">' +
+      '<p class="mono">Curated arcade</p>' +
+      '<h1>Press start on <span>something small.</span></h1>' +
+      '<p>Every game here is a single HTML file served straight from the repository. Nothing to install, nothing to sign up for. Pick one and it opens in this window.</p>' +
+    '</section>' +
+    continueHTML() +
+    '<div class="filters">' + filtersHTML() + '</div>' +
+    '<div class="grid" id="grid">' + gridHTML() + '</div>' +
+    '<p class="note">Games load from ' + esc(REPO.owner + "/" + REPO.repo) + ' the moment you pick one. Favorites, recently played and each game\u2019s own progress stay in this browser only.</p>';
+  updateCount();
+}
+
+function refreshGrid() {
+  const grid = document.getElementById("grid");
+  if (grid) grid.innerHTML = gridHTML();
+  updateCount();
+}
+
+function updateCount() {
+  const el = document.getElementById("count");
+  if (el) el.textContent = GAMES.filter(matches).length + " / " + GAMES.length + " games";
+}
+
+/* ── rendering: play view ─────────────────────────────────── */
+function renderPlay(id) {
+  const game = findGame(id);
+  const view = document.getElementById("view");
+
+  if (!game) {
+    view.innerHTML = '<div class="empty">That game is not in the catalog. ' +
+      '<a class="btn" href="#/" style="margin-left:8px">Back to library</a></div>';
+    updateCount();
+    return;
+  }
+
+  markPlayed(game.id);
+
+  view.innerHTML =
+    '<div class="playbar">' +
+      '<div><p class="mono">Now playing</p><h1>' + esc(game.title) + '</h1></div>' +
+      '<div class="playbar-actions">' +
+        '<button class="btn" data-fullscreen>' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 15v5h-5M20 9V4h-5M4 15v5h5"/></svg>' +
+          '<span id="fs-label">Fullscreen</span>' +
+        '</button>' +
+        '<a class="btn btn-primary" href="#/" data-home>' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>' +
+          'Home' +
+        '</a>' +
+      '</div>' +
+    '</div>' +
+    '<div class="stage" id="stage">' +
+      '<div class="stage-msg" id="stage-msg">Loading ' + esc(game.title) + '\u2026</div>' +
+      '<iframe id="game-frame" class="frame" hidden allowfullscreen ' +
+        'allow="fullscreen; autoplay; gamepad; clipboard-write" ' +
+        'title="' + esc(game.title) + '"></iframe>' +
+    '</div>';
+
+  updateCount();
+  loadGame(game.id);
+}
+
+async function loadGame(id) {
+  const game = findGame(id);
+  const frame = document.getElementById("game-frame");
+  const msg = document.getElementById("stage-msg");
+  if (!game || !frame || !msg) return;
+
+  frame.hidden = true;
+  frame.removeAttribute("srcdoc");
+  msg.hidden = false;
+  msg.textContent = "Loading " + game.title + "\u2026";
+
+  try {
+    const res = await fetch(rawUrl(game.path), { cache: "no-store" });
+    if (!res.ok) {
+      throw new Error(res.status === 404
+        ? "That file is not in the repository yet."
+        : "The repository answered with " + res.status + ".");
+    }
+    const html = await res.text();
+    if (playId() !== id) return;
+    frame.srcdoc = withBase(html, rawDir(game.path));
+    frame.hidden = false;
+    msg.hidden = true;
+  } catch (err) {
+    msg.hidden = false;
+    msg.innerHTML =
+      '<div class="err">' +
+        '<h2>This cabinet won\u2019t open</h2>' +
+        '<p>' + esc(err.message) + '</p>' +
+        '<p class="path">' + esc(rawUrl(game.path)) + '</p>' +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" data-retry>Try again</button>' +
+          '<a class="btn" href="' + esc(rawUrl(game.path)) + '" target="_blank" rel="noreferrer">Open file</a>' +
+        '</div>' +
+      '</div>';
+  }
+}
+
+/* Relative asset paths inside a game resolve against its folder in the repo. */
+function withBase(html, baseHref) {
+  const tag = '<base href="' + baseHref + '">';
+  if (/<head[^>]*>/i.test(html)) return html.replace(/<head[^>]*>/i, (m) => m + tag);
+  if (/<html[^>]*>/i.test(html)) return html.replace(/<html[^>]*>/i, (m) => m + tag);
+  return tag + html;
+}
+
+/* ── library mutations ────────────────────────────────────── */
+function toggleFavorite(id) {
+  if (isFavorite(id)) library.favorites = library.favorites.filter((f) => f !== id);
+  else library.favorites = [id, ...library.favorites];
+  saveLibrary();
+  if (playId()) return;
+  renderLibrary();
+}
+
+function markPlayed(id) {
+  library.recent = [id, ...library.recent.filter((r) => r !== id)].slice(0, 8);
+  library.plays[id] = (library.plays[id] || 0) + 1;
+  saveLibrary();
+}
+
+/* ── fullscreen ───────────────────────────────────────────── */
+function toggleFullscreen() {
+  const stage = document.getElementById("stage");
+  if (!stage) return;
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  else if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {});
+}
+document.addEventListener("fullscreenchange", () => {
+  const label = document.getElementById("fs-label");
+  if (label) label.textContent = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
+});
+
+/* ── routing ──────────────────────────────────────────────── */
+function render() {
+  const id = playId();
+  if (id) renderPlay(id);
+  else renderLibrary();
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener("hashchange", () => {
+  if (!playId() && document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  render();
+});
+
+/* ── events ───────────────────────────────────────────────── */
+document.addEventListener("click", (e) => {
+  const fav = e.target.closest("[data-fav]");
+  if (fav) { toggleFavorite(fav.dataset.fav); return; }
+
+  const pill = e.target.closest("[data-filter]");
+  if (pill) { filter = pill.dataset.filter; renderLibrary(); return; }
+
+  if (e.target.closest("[data-fullscreen]")) { toggleFullscreen(); return; }
+
+  const retry = e.target.closest("[data-retry]");
+  if (retry) { const id = playId(); if (id) loadGame(id); return; }
+
+  const home = e.target.closest("[data-home]");
+  if (home) {
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    if (!playId()) { e.preventDefault(); renderLibrary(); }
+  }
+});
+
+document.addEventListener("input", (e) => {
+  if (e.target.id !== "search") return;
+  query = e.target.value.trim();
+  if (playId()) { location.hash = "#/"; return; }
+  refreshGrid();
+});
+
+/* ── boot ─────────────────────────────────────────────────── */
+document.getElementById("app").innerHTML =
+  '<header class="top"><div class="wrap top-inner">' +
+    '<a class="brand" href="#/"><span class="dot"></span>GameVault</a>' +
+    '<div class="search">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
+      '<input id="search" type="search" placeholder="Search games" autocomplete="off" aria-label="Search games">' +
+    '</div>' +
+    '<span class="count" id="count"></span>' +
+  '</div></header>' +
+  '<main class="wrap" id="view"></main>';
+
+render();
+</script>
+</body>
+</html>
