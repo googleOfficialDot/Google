@@ -105,29 +105,117 @@
 
 <script>
 /* ─────────────────────────────────────────────────────────────
-   CONFIG — point at the repo that holds your game files.
-   Add a game by adding one object to GAMES: path is its location
-   in the repo, e.g. "games/snake.html".
+   THE CATALOG
+   Every game is one line: id, title, file (its HTML file at the
+   root of this repo), tags, tagline. To add a game, add a line.
    ───────────────────────────────────────────────────────────── */
-const REPO = { owner: "googleOfficialDot", repo: "Google", branch: "main" };
-
 const GAMES = [
-  { id: "2048",        title: "2048",        tagline: "Slide, merge, chase the tile.",        path: "games/2048.html",        tags: ["Puzzle"],  colors: ["#f7b955", "#e2612f"], glyph: "2" },
-  { id: "snake",       title: "Snake",       tagline: "Eat, grow, don't bite yourself.",      path: "games/snake.html",       tags: ["Arcade"],  colors: ["#5ee08a", "#0f8a5f"], glyph: "S" },
-  { id: "breakout",    title: "Breakout",    tagline: "One paddle against a wall of bricks.", path: "games/breakout.html",    tags: ["Arcade"],  colors: ["#6aa8ff", "#3b3fb8"], glyph: "B" },
-  { id: "tetris",      title: "Tetris",      tagline: "Stack the falling blocks clean.",      path: "games/tetris.html",      tags: ["Puzzle"],  colors: ["#c084fc", "#6d28d9"], glyph: "T" },
-  { id: "flappy",      title: "Flappy",      tagline: "Tap, flap, survive the pipes.",        path: "games/flappy.html",      tags: ["Reflex"],  colors: ["#7dd3fc", "#0e7490"], glyph: "F" },
-  { id: "minesweeper", title: "Minesweeper", tagline: "Deduce the field, flag the mines.",    path: "games/minesweeper.html", tags: ["Logic"],   colors: ["#cbd5e1", "#475569"], glyph: "M" }
+  { id:"12minibattles",     title:"12 Mini Battles",         file:"12minibattles.html",     tags:["Action"],     tagline:"Twelve tiny showdowns, one arena." },
+  { id:"2048",              title:"2048",                    file:"2048.html",              tags:["Puzzle"],     tagline:"Slide, merge, chase the tile." },
+  { id:"8ballclassic",      title:"8 Ball Classic",          file:"8ballclassic.html",      tags:["Sports"],     tagline:"Rack them up and run the table." },
+  { id:"indev",             title:"Eaglercraft",             file:"Indev.html",             tags:["Sandbox"],    tagline:"Minecraft, running in the browser." },
+  { id:"agariolite",        title:"Agario Lite",             file:"agariolite.html",        tags:[".io"],        tagline:"Eat the small, dodge the big." },
+  { id:"agesofconflict",    title:"Ages of Conflict",        file:"agesofconflict.html",    tags:["Sandbox"],    tagline:"Draw nations, then watch them fight." },
+  { id:"angrybirds",        title:"Angry Birds",             file:"angrybirds.html",        tags:["Puzzle"],     tagline:"Sling birds, topple towers." },
+  { id:"awesometanks",      title:"Awesome Tanks",           file:"awesometanks.html",      tags:["Action"],     tagline:"Tank duels with a bouncy twist." },
+  { id:"baconmaydie",       title:"Bacon May Die",           file:"baconmaydie.html",       tags:["Action"],     tagline:"Brawl through waves for your bacon." },
+  { id:"basketballlegends", title:"Basketball Legends",      file:"basketballlegends.html", tags:["Sports"],     tagline:"Sink threes and dunk on legends." },
+  { id:"basketballstars",   title:"Basketball Stars",        file:"basketballstars.html",   tags:["Sports"],     tagline:"One-on-one hoops, no mercy." },
+  { id:"bitplanes",         title:"Bit Planes",              file:"bitplanes.html",         tags:["Arcade"],     tagline:"Fly, shoot, stay airborne." },
+  { id:"blumgiracers",      title:"Blumgi Racers",           file:"blumgiracers.html",      tags:["Racing"],     tagline:"Tiny cars, chaotic tracks." },
+  { id:"bobtherobber5",     title:"Bob the Robber 5",        file:"bobtherobber5.html",     tags:["Puzzle"],     tagline:"Sneak, crack, and slip away." },
+  { id:"bubbleshooter",     title:"Bubble Shooter",          file:"bubbleshooter.html",     tags:["Puzzle"],     tagline:"Match colours before the board drops." },
+  { id:"capybaraclicker",   title:"Capybara Clicker",        file:"capybaraclicker.html",   tags:["Clicker"],    tagline:"Tap a capybara, watch it multiply." },
+  { id:"carkingarena",      title:"Car King Arena",          file:"carkingarena.html",      tags:["Racing"],     tagline:"Demolition derby with an arena full." },
+  { id:"choppyorc",         title:"Choppy Orc",              file:"choppyorc.html",         tags:["Action"],     tagline:"Hack your way out of the dungeon." },
+  { id:"clashofvikings",    title:"Clash of Vikings",        file:"clashofvikings.html",    tags:["Action"],     tagline:"Send the raiders, take the shore." },
+  { id:"cleanupio",         title:"Cleanup.io",              file:"cleanupio.html",         tags:[".io"],        tagline:"Tidy the arena before anyone else." },
+  { id:"clusterrush",       title:"Cluster Rush",            file:"clusterrush.html",       tags:["Skill"],      tagline:"Ride the trucks, don't touch the floor." },
+  { id:"crazymotorcycle",   title:"Crazy Motorcycle",        file:"crazymotorcycle.html",   tags:["Racing"],     tagline:"Two wheels, no brakes." },
+  { id:"dadish",            title:"Dadish",                  file:"dadish.html",            tags:["Platformer"], tagline:"A dad-shaped radish on a rescue run." },
+  { id:"dadish3",           title:"Dadish 3",                file:"dadish3.html",           tags:["Platformer"], tagline:"More kids, more spikes, more dad jokes." },
+  { id:"driftboss",         title:"Drift Boss",              file:"driftboss.html",         tags:["Racing"],     tagline:"One button, endless drifting." },
+  { id:"drivemad",          title:"Drive Mad",               file:"drivemad.htm",           tags:["Racing"],     tagline:"Ridiculous tracks, fragile cars." },
+  { id:"eggycar",           title:"Eggy Car",                file:"eggy-car.html",          tags:["Racing"],     tagline:"Keep the egg in the cup." },
+  { id:"flappybird",        title:"Flappy Bird",             file:"flappybird.html",        tags:["Arcade"],     tagline:"Tap, flap, survive the pipes." },
+  { id:"footballbros",      title:"Football Bros",           file:"footballbros.html",      tags:["Sports"],     tagline:"Hut, hike, and go long." },
+  { id:"fruitninja",        title:"Fruit Ninja",             file:"fruitninja.html",        tags:["Arcade"],     tagline:"Slice fruit, skip the bombs." },
+  { id:"funnybattle",       title:"Funny Battle",            file:"funnybattle.html",       tags:["Action"],     tagline:"Ragdoll fighters, silly weapons." },
+  { id:"funnybattle2",      title:"Funny Battle 2",          file:"funnybattle2.html",      tags:["Action"],     tagline:"The rematch, even more ridiculous." },
+  { id:"geometrydash",      title:"Geometry Dash",           file:"geometrydash.html",      tags:["Skill"],      tagline:"One jump, perfect timing." },
+  { id:"geometryvibes",     title:"Geometry Vibes",          file:"geometryvibes.html",     tags:["Skill"],      tagline:"Rhythm spikes at full speed." },
+  { id:"getontop",          title:"Get on Top",              file:"getontop.html",          tags:["Action","Sports"], tagline:"Wrestle your way to the pin." },
+  { id:"googlebaseball",    title:"Google Baseball",         file:"googlebaseball.html",    tags:["Sports"],     tagline:"Nine innings of browser ball." },
+  { id:"guesstheiranswer",  title:"Guess Their Answer",      file:"guesstheiranswer.html",  tags:["Trivia"],     tagline:"Predict the crowd, score the points." },
+  { id:"hanger2",           title:"Hanger 2",                file:"hanger2.html",           tags:["Arcade"],     tagline:"Swing far, keep your limbs." },
+  { id:"hoverracerdrive",   title:"Hover Racer Drive",       file:"hoverracerdrive.html",   tags:["Racing"],     tagline:"Hover cars at impossible speed." },
+  { id:"idlebreakout",      title:"Idle Breakout",           file:"idlebreakout.html",      tags:["Clicker"],    tagline:"Bricks that break themselves." },
+  { id:"johnnytrigger",     title:"Johnny Trigger",          file:"johnnytrigger.html",     tags:["Action"],     tagline:"Slow-mo shots, perfect timing." },
+  { id:"jumpingshell",      title:"Jumping Shell",           file:"jumpingshell.html",      tags:["Arcade"],     tagline:"Bounce the shell, chase the score." },
+  { id:"karatebros",        title:"Karate Bros",             file:"karatebros.html",        tags:["Action"],     tagline:"Duels with sticks and kicks." },
+  { id:"leveldevil",        title:"Level Devil",             file:"leveldevil.html",        tags:["Platformer"], tagline:"A platformer that cheats." },
+  { id:"monkeymart",        title:"Monkey Mart",             file:"monkeymart.html",        tags:["Casual"],     tagline:"Stock the shelves, hire the monkeys." },
+  { id:"motox3m3",          title:"Moto X3M",                file:"motox3m3.html",          tags:["Racing"],     tagline:"Trials, flips and crash helmets." },
+  { id:"motox3mpoolparty",  title:"Moto X3M Pool Party",     file:"motox3mpoolparty.html",  tags:["Racing"],     tagline:"Summer tracks, wet landings." },
+  { id:"motox3mspookyland", title:"Moto X3M Spooky Land",    file:"motox3mspookyland.html", tags:["Racing"],     tagline:"Halloween tracks, same physics." },
+  { id:"noobminer",         title:"Noob Miner",              file:"noobminer.html",         tags:["Clicker"],    tagline:"Dig deeper, buy better drills." },
+  { id:"oppositeday",       title:"Opposite Day",            file:"oppositeday.html",       tags:["Puzzle"],     tagline:"Do the opposite to win." },
+  { id:"ovo",               title:"OvO",                     file:"ovo.html",               tags:["Platformer"], tagline:"Wall jumps and slick speedruns." },
+  { id:"paperio2",          title:"Paper.io 2",              file:"paperio2.htm",           tags:[".io"],        tagline:"Claim territory, close the loop." },
+  { id:"pingpongchaos",     title:"Ping Pong Chaos",         file:"pingpongchaos.html",     tags:["Sports"],     tagline:"Table tennis at full chaos." },
+  { id:"pixelspeedrun",     title:"Pixel Speedrun",          file:"pixelspeedrun.html",     tags:["Arcade"],     tagline:"Tight jumps, faster runs." },
+  { id:"plonky",            title:"Plonky",                  file:"plonky.html",            tags:["Arcade"],     tagline:"Bounce, dive and stick the landing." },
+  { id:"polytrack",         title:"PolyTrack",               file:"polytrack.html",         tags:["Racing"],     tagline:"Low-poly time trials." },
+  { id:"poorbunny",         title:"Poor Bunny",              file:"poorbunny.html",         tags:["Arcade"],     tagline:"Grab the carrots, dodge the spikes." },
+  { id:"ragdollhit",        title:"Ragdoll Hit",             file:"ragdollhit.html",        tags:["Action"],     tagline:"Physics fights that go flying." },
+  { id:"ragdollsoccer",     title:"Ragdoll Soccer",          file:"ragdollsoccer.html",     tags:["Sports"],     tagline:"Football with floppy limbs." },
+  { id:"retrobowlcollege",  title:"Retro Bowl College",      file:"retrobowlcollege.html",  tags:["Sports"],     tagline:"Gridiron with pixel helmets." },
+  { id:"riddleschool",      title:"Riddle School",           file:"riddleschool.html",      tags:["Puzzle"],     tagline:"Escape class, one puzzle at a time." },
+  { id:"rooftopsnipers",    title:"Rooftop Snipers",         file:"rooftopsnipers.html",    tags:["Shooter"],    tagline:"Two snipers, one rooftop." },
+  { id:"shortlife",         title:"Short Life",              file:"shortlife.html",         tags:["Arcade"],     tagline:"Every hazard is out to get you." },
+  { id:"slope",             title:"Slope",                   file:"slope.html",             tags:["Skill"],      tagline:"A ball, a slope, endless speed." },
+  { id:"slope2player",      title:"Slope 2 Player",          file:"slope2player.html",      tags:["Skill"],      tagline:"Race a friend down the slope." },
+  { id:"slowroads",         title:"Slow Roads",              file:"slowroads.html",         tags:["Racing"],     tagline:"Endless driving, no pressure." },
+  { id:"soccerbros",        title:"Soccer Bros",             file:"soccerbros.html",        tags:["Sports"],     tagline:"Two-on-two with big heads." },
+  { id:"soccerrandom",      title:"Soccer Random",           file:"soccerrandom.htm",       tags:["Sports"],     tagline:"Football, but the rules change." },
+  { id:"spaceiskey",        title:"Space is Key",            file:"spaceiskey.html",        tags:["Arcade"],     tagline:"One button, brutal spikes." },
+  { id:"spacewaves",        title:"Space Waves",             file:"spacewaves.html",        tags:["Skill"],      tagline:"Steer the arrow, chase the flow." },
+  { id:"stacktris",         title:"Stacktris",               file:"stacktris.html",         tags:["Puzzle"],     tagline:"Stack the blocks, keep it level." },
+  { id:"stateio",           title:"State.io",                file:"stateio.html",           tags:[".io"],        tagline:"Send armies, take the map." },
+  { id:"stickarchersbattle",title:"Stick Archers Battle",    file:"stickarchersbattle.html",tags:["Action"],     tagline:"Archers on sticks, arrows in the air." },
+  { id:"stickfighter",      title:"Stick Fighter",           file:"stickfighter.html",      tags:["Action"],     tagline:"Brawls with sticks and style." },
+  { id:"stickmanhook",      title:"Stickman Hook",           file:"stickmanhook.html",      tags:["Skill"],      tagline:"Swing from hook to hook." },
+  { id:"subwaysurfers",     title:"Subway Surfers",          file:"subwaysurfers.html",     tags:["Arcade"],     tagline:"Dodge the trains, grab the coins." },
+  { id:"tanukisunset",      title:"Tanuki Sunset",           file:"tanuki-sunset.html",     tags:["Racing"],     tagline:"Longboard the sunset road." },
+  { id:"thereisnog",        title:"There Is No Game",        file:"thereisnog.html",        tags:["Puzzle"],     tagline:"The game insists there is no game." },
+  { id:"timeshooter2",      title:"Time Shooter 2",          file:"timeshooter2.html",      tags:["Shooter"],    tagline:"Time only moves when you do." },
+  { id:"timeshooter3",      title:"Time Shooter 3",          file:"timeshooter3.html",      tags:["Shooter"],    tagline:"Bullet time, third round." },
+  { id:"tinyfishing",       title:"Tiny Fishing",            file:"tinyfishing.html",       tags:["Clicker"],    tagline:"Cast deeper, catch stranger things." },
+  { id:"triviacrack",       title:"Trivia Crack",            file:"triviacrack.html",       tags:["Trivia"],     tagline:"Spin the wheel, know the answer." },
+  { id:"tubejumpers",       title:"Tube Jumpers",            file:"tubejumpers.html",       tags:["Arcade"],     tagline:"Last one on the tube wins." },
+  { id:"vex6",              title:"Vex 6",                   file:"vex6.html",              tags:["Platformer"], tagline:"Traps, spikes and slick movement." },
+  { id:"webecomewhatwebehold", title:"We Become What We Behold", file:"webecomewhatwebehold.html", tags:["Casual"], tagline:"Point the camera, watch it spread." },
+  { id:"wheeliebike",       title:"Wheelie Bike",            file:"wheeliebike.html",       tags:["Racing"],     tagline:"Keep the front wheel up." },
+  { id:"zombierush",        title:"Zombie Rush",             file:"zombierush.html",        tags:["Action"],     tagline:"Run, shoot, don't get swarmed." }
 ];
 
-/* ── repo helpers ─────────────────────────────────────────── */
-const RAW_BASE = "https://raw.githubusercontent.com/" + REPO.owner + "/" + REPO.repo + "/" + REPO.branch + "/";
-const rawUrl = (path) => RAW_BASE + String(path).replace(/^\/+/, "");
-function rawDir(path) {
-  const clean = String(path).replace(/^\/+/, "");
-  const cut = clean.lastIndexOf("/");
-  return cut === -1 ? RAW_BASE : RAW_BASE + clean.slice(0, cut + 1);
-}
+/* card colours come from the game's first tag */
+const TAG_COLORS = {
+  "Arcade":     ["#5ee08a", "#0f8a5f"],
+  "Puzzle":     ["#f7b955", "#e2612f"],
+  "Action":     ["#ff7a7a", "#a01d3c"],
+  "Sports":     ["#6aa8ff", "#3b3fb8"],
+  "Racing":     ["#22d3ee", "#0e7490"],
+  ".io":        ["#a78bfa", "#5b21b6"],
+  "Clicker":    ["#fcd34d", "#b45309"],
+  "Casual":     ["#f9a8d4", "#9d174d"],
+  "Shooter":    ["#94a3b8", "#334155"],
+  "Platformer": ["#4ade80", "#166534"],
+  "Skill":      ["#c084fc", "#6d28d9"],
+  "Sandbox":    ["#7dd3fc", "#075985"],
+  "Trivia":     ["#fb923c", "#9a3412"]
+};
+const colorsOf = (game) => TAG_COLORS[(game.tags || [])[0]] || ["#22d3a6", "#0e7490"];
 
 /* ── browser storage ──────────────────────────────────────── */
 const STORE_KEY = "gamevault.library.v1";
@@ -175,7 +263,7 @@ function matches(game) {
 }
 
 function thumbStyle(game) {
-  const c = game.colors || ["#22d3a6", "#0ea5e9"];
+  const c = colorsOf(game);
   return "background-image:radial-gradient(130% 130% at 12% 0%," + c[0] + " 0%," + c[1] + " 100%)";
 }
 
@@ -186,7 +274,7 @@ function cardHTML(game) {
     '<article class="card">' +
       '<div class="thumb" style="' + thumbStyle(game) + '">' +
         '<div class="scan"></div><div class="edge"></div>' +
-        '<span class="glyph">' + esc(game.glyph || game.title.charAt(0)) + '</span>' +
+        '<span class="glyph">' + esc(game.title.charAt(0)) + '</span>' +
         '<div class="card-play"><span>' +
           '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play' +
         '</span></div>' +
@@ -241,12 +329,12 @@ function renderLibrary() {
     '<section class="hero">' +
       '<p class="mono">Curated arcade</p>' +
       '<h1>Press start on <span>something small.</span></h1>' +
-      '<p>Every game here is a single HTML file served straight from the repository. Nothing to install, nothing to sign up for. Pick one and it opens in this window.</p>' +
+      '<p>' + GAMES.length + ' browser games, nothing to install and no sign-up. Pick one and it opens right here in this window.</p>' +
     '</section>' +
     continueHTML() +
     '<div class="filters">' + filtersHTML() + '</div>' +
     '<div class="grid" id="grid">' + gridHTML() + '</div>' +
-    '<p class="note">Games load from ' + esc(REPO.owner + "/" + REPO.repo) + ' the moment you pick one. Favorites, recently played and each game\u2019s own progress stay in this browser only.</p>';
+    '<p class="note">Every game is a single HTML file sitting next to this page, loaded only when you pick it. Favorites, recently played and each game\u2019s own progress stay in this browser only.</p>';
   updateCount();
 }
 
@@ -293,6 +381,7 @@ function renderPlay(id) {
       '<div class="stage-msg" id="stage-msg">Loading ' + esc(game.title) + '\u2026</div>' +
       '<iframe id="game-frame" class="frame" hidden allowfullscreen ' +
         'allow="fullscreen; autoplay; gamepad; clipboard-write" ' +
+        'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-pointer-lock" ' +
         'title="' + esc(game.title) + '"></iframe>' +
     '</div>';
 
@@ -307,20 +396,21 @@ async function loadGame(id) {
   if (!game || !frame || !msg) return;
 
   frame.hidden = true;
-  frame.removeAttribute("srcdoc");
+  frame.removeAttribute("src");
   msg.hidden = false;
   msg.textContent = "Loading " + game.title + "\u2026";
 
   try {
-    const res = await fetch(rawUrl(game.path), { cache: "no-store" });
-    if (!res.ok) {
-      throw new Error(res.status === 404
-        ? "That file is not in the repository yet."
-        : "The repository answered with " + res.status + ".");
+    if (location.protocol !== "file:") {
+      const res = await fetch(game.file, { method: "HEAD", cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(res.status === 404
+          ? "That file is not in the repository yet."
+          : "The site answered with " + res.status + ".");
+      }
     }
-    const html = await res.text();
     if (playId() !== id) return;
-    frame.srcdoc = withBase(html, rawDir(game.path));
+    frame.src = game.file;
     frame.hidden = false;
     msg.hidden = true;
   } catch (err) {
@@ -329,21 +419,13 @@ async function loadGame(id) {
       '<div class="err">' +
         '<h2>This cabinet won\u2019t open</h2>' +
         '<p>' + esc(err.message) + '</p>' +
-        '<p class="path">' + esc(rawUrl(game.path)) + '</p>' +
+        '<p class="path">' + esc(game.file) + '</p>' +
         '<div class="actions">' +
           '<button class="btn btn-primary" data-retry>Try again</button>' +
-          '<a class="btn" href="' + esc(rawUrl(game.path)) + '" target="_blank" rel="noreferrer">Open file</a>' +
+          '<a class="btn" href="' + esc(game.file) + '" target="_blank" rel="noreferrer">Open file</a>' +
         '</div>' +
       '</div>';
   }
-}
-
-/* Relative asset paths inside a game resolve against its folder in the repo. */
-function withBase(html, baseHref) {
-  const tag = '<base href="' + baseHref + '">';
-  if (/<head[^>]*>/i.test(html)) return html.replace(/<head[^>]*>/i, (m) => m + tag);
-  if (/<html[^>]*>/i.test(html)) return html.replace(/<html[^>]*>/i, (m) => m + tag);
-  return tag + html;
 }
 
 /* ── library mutations ────────────────────────────────────── */
@@ -419,7 +501,7 @@ document.getElementById("app").innerHTML =
     '<a class="brand" href="#/"><span class="dot"></span>GameVault</a>' +
     '<div class="search">' +
       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
-      '<input id="search" type="search" placeholder="Search games" autocomplete="off" aria-label="Search games">' +
+      '<input id="search" type="search" placeholder="Search ' + GAMES.length + ' games" autocomplete="off" aria-label="Search games">' +
     '</div>' +
     '<span class="count" id="count"></span>' +
   '</div></header>' +
