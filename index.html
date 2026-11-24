@@ -328,14 +328,11 @@ function continueHTML() {
 function renderLibrary() {
   document.getElementById("view").innerHTML =
     '<section class="hero">' +
-      '<p class="mono">Curated arcade</p>' +
       '<h1>Press start on <span>something small.</span></h1>' +
-      '<p>' + GAMES.length + ' browser games, nothing to install and no sign-up. Pick one and it opens right here in this window.</p>' +
     '</section>' +
     continueHTML() +
     '<div class="filters">' + filtersHTML() + '</div>' +
     '<div class="grid" id="grid">' + gridHTML() + '</div>' +
-    '<p class="note">Every game is a single HTML file sitting next to this page, loaded only when you pick it. Favorites, recently played and each game\u2019s own progress stay in this browser only.</p>';
   updateCount();
 }
 
@@ -498,7 +495,7 @@ document.addEventListener("input", (e) => {
 /* ── boot ─────────────────────────────────────────────────── */
 document.getElementById("app").innerHTML =
   '<header class="top"><div class="wrap top-inner">' +
-    '<a class="brand" href="#/"><span class="dot"></span>GameVault</a>' +
+    '<a class="brand" href="#/"><span class="dot"></span>Games</a>' +
     '<div class="search">' +
       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
       '<input id="search" type="search" placeholder="Search ' + GAMES.length + ' games" autocomplete="off" aria-label="Search games">' +
